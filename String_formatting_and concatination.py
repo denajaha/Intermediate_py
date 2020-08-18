@@ -19,6 +19,7 @@ print(', '.join(names))     # join uses less processing
 import os
 location_of_files = '/Users/denis/PycharmProjects/Intermediate_py'
 file_name = 'example.rtf'
+# this works for macOS, windows is using backslashes and .txt instead of .rtf
 
 print(location_of_files + '/' + file_name)
 
