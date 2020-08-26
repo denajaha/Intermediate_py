@@ -2,6 +2,19 @@ import random
 import pygame
 from blob import Blob
 import numpy as np
+import logging
+# __str__ --> human readable desc of my object
+# __repr__ --> more meant for debugging purposes
+'''
+-- logging levels
+DEBUG	Detailed information, typically of interest only when diagnosing problems.
+INFO	Confirmation that things are working as expected.
+WARNING	An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected.
+ERROR	Due to a more serious problem, the software has not been able to perform some function.
+CRITICAL	A serious error, indicating that the program itself may be unable to continue running.
+'''
+
+logging.basicConfig(filename='logfile.log', level=logging.INFO)
 
 STARTING_BLUE_BLOBS = 10
 STARTING_RED_BLOBS = 3
@@ -24,6 +37,7 @@ class BlueBlob(Blob):
         self.color = BLUE  # now all blobs re blue
 
     def __add__(self, other_blob):
+        logging.info('Blog add op {} + {}'.format(str(self.color), str(other_blob.color)))
         if other_blob.color == (255, 0, 0):  # red
             self.size -= other_blob.size
             other_blob.size -= self.size
@@ -55,6 +69,8 @@ def hanlde_colisions(blob_list):
     for blue_id, blue_blob in blues.copy().items():
         for other_blobs in blues, reds, greens:
             for other_blob_id, other_blob in other_blobs.copy().items():
+                logging.debug(
+                    'Checking if blobs are touching {} + {}'.format(str(blue_blob.color), str(other_blob.color)))
                 if blue_blob == other_blob:
                     pass
                 else:
@@ -85,19 +101,25 @@ def draw_environment(blob_list):
     return blues, reds, greens
 
 
-
 def main():
     blue_blobs = dict(enumerate([BlueBlob(BLUE, WIDTH, HEIGHT) for i in range(STARTING_BLUE_BLOBS)]))
     red_blobs = dict(enumerate([RedBlob(WIDTH, HEIGHT) for i in range(STARTING_RED_BLOBS)]))
     green_blobs = dict(enumerate([GreenBlob(WIDTH, HEIGHT) for i in range(STARTING_GREEN_BLOBS)]))
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-        blue_blobs, red_blobs, green_blobs = draw_environment([blue_blobs, red_blobs, green_blobs])
-        clock.tick(60)
+        try:
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+            blue_blobs, red_blobs, green_blobs = draw_environment([blue_blobs, red_blobs, green_blobs])
+            clock.tick(60)
+        except Exception as e:
+            logging.critical(str(e))
+            pygame.quit()
+            quit()
+            break
         # print(red_blob.x, red_blob.y)
 
 
